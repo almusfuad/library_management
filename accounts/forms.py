@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.models import User
 from .constants import GENDER_TYPE
 from .models import UserBankAccount, UserAddress
+from datetime import datetime
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -30,6 +31,10 @@ class UserRegistrationForm(UserCreationForm):
                   'password1',
                   'password2',
             ]
+            
+            widgets = {
+                  'birth_date': forms.SelectDateWidget(years = range(1900, datetime.now().year + 1))
+            }
             
             
       def save(self, commit = True):
