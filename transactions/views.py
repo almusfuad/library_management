@@ -21,15 +21,15 @@ from .constants import DEPOSIT, WITHDRAW, BORROW_BOOK, RETURN_BOOK
 
 # single transactions view for make deposit, withdraw
 class TransactionCreateMixin(LoginRequiredMixin, CreateView):
-      template_name = 'transactions/transaction_form.html'
+      template_name = 'transactions/transaction_forms.html'
       model = Transaction
       title = ''
-      success_url = ''
+      success_url = reverse_lazy('transaction_report')
       
       def get_form_kwargs(self):
             kwargs = super().get_form_kwargs()
             kwargs.update({
-                  'account': self.request.user.bank_account
+                  'account': self.request.user.account
             })
             return kwargs
       
@@ -38,11 +38,11 @@ class TransactionCreateMixin(LoginRequiredMixin, CreateView):
             context.update({
                   'title': self.title
             })
-            
+            return context
 
 class DepositMoneyView(TransactionCreateMixin):
       form_class = DepositForm
-      title = 'Deposit'
+      title = 'Deposit Money'
       
       def get_initial(self):
             initial = {'transaction_type': DEPOSIT}
@@ -50,14 +50,13 @@ class DepositMoneyView(TransactionCreateMixin):
       
       def form_valid(self, form):
             amount = form.cleaned_data.get('amount')
-            account = self.request.user.bank_account
+            account = self.request.user.account
             account.balance += amount
             account.save(
                   update_fields = ['balance']
             )
             messages.success(self.request, f'BDT {amount} was deposited successfully.')
-            
-            return form_valid(form)
+            return super().form_valid(form)
       
             
 class WithdrawMoneyView(TransactionCreateMixin):
@@ -70,14 +69,14 @@ class WithdrawMoneyView(TransactionCreateMixin):
       
       def form_valid(self, form):
             amount = form.cleaned_data.get('amount')
-            account = self.request.user.bank_account
+            account = self.request.user.account
             account.balance -= amount
             account.save(
                   update_fields = ['balance']
             )
             messages.success(self.request, f'BDT {amount} was withdrawn successfully.')
                   
-            return form_valid(form)
+            return super().form_valid(form)
            
             
 
@@ -91,12 +90,12 @@ class TransactionsReportView(LoginRequiredMixin, ListView):
       def get_queryset(self):
             # Get all transactions data from requested user
             queryset = super().get_queryset().filter(
-                  account = self.request.user.bank_account
+                  account = self.request.user.account
             )
             
             # Get filtered transactions
-            start_date_str = self.request.GET('start_date')
-            end_date_str = self.request.GET('end_date')
+            start_date_str = self.request.GET.get('start_date')
+            end_date_str = self.request.GET.get('end_date')
             
             if start_date_str and end_date_str:
                   start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
@@ -106,15 +105,16 @@ class TransactionsReportView(LoginRequiredMixin, ListView):
                   queryset = queryset.filter(timestamp__date__gte = start_date, timestamp__date__lte = end_date)
                   
                   # get final report
-                  self.balance = Transaction.objects.filter(timestamp__date__gte = start_date, timestamp__date__lte = end_date).aggregate(Sum('amount'))['amount_sum']
+                  self.balance = Transaction.objects.filter(timestamp__date__gte = start_date, timestamp__date__lte = end_date).aggregate(Sum('amount'))['amount__sum']
             else:
-                  self.balance = queryset.aggregate(Sum('amount'))['amount_sum']
+                  self.balance = queryset.aggregate(Sum('amount'))['amount__sum']
                   
             return queryset.distinct()
       
       def get_context_data(self, **kwargs):
             context = super().get_context_data(**kwargs)
             context.update({
-                  'account': self.request.user.bank_account,
+                  'account': self.request.user.account,
                   'total_amount': self.balance,
             })
+            return context

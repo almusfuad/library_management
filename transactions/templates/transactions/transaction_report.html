@@ -71,17 +71,17 @@
         </td>
         <td class="px-4 py-2">
           <!-- intcomma helps to make comma after every thousands number -->
-          $ {{ transaction.amount|floatformat:2|intcomma }}
+          BDT {{ transaction.amount|floatformat:2|intcomma }}
         </td>
         <td class="px-4 py-2">
-          $ {{ transaction.balance_after_transaction|floatformat:2|intcomma }}
+          BDT {{ transaction.balance_after_transaction|floatformat:2|intcomma }}
         </td>
       </tr>
       {% endfor %}
       <tr class="bg-gray-800 text-white">
         <th class="px-4 py-2 text-right" colspan="2">Total Transactions Amount : </th>
         <th class="px-4 py-2 text-left">
-          $ {{ total_amount|default:'0'|floatformat:2|intcomma }}
+          BDT {{ total_amount|default:'0'|floatformat:2|intcomma }}
         </th>
         <th class="px-4 py-2"></th>
       </tr>

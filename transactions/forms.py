@@ -10,17 +10,17 @@ class TransactionForm(forms.ModelForm):
             fields = ['amount', 'transaction_type']
             
             
-            def __init__(self, *args, **kwargs):
-                  self.account = kwargs.pop('bank_account')
-                  super().__init__(*args, **kwargs)
-                  self.fields['transaction_type'].disabled = True
-                  self.fields['transaction_type'].widget = forms.HiddenInput()
+      def __init__(self, *args, **kwargs):
+            self.account = kwargs.pop('account')
+            super().__init__(*args, **kwargs)
+            self.fields['transaction_type'].disabled = True
+            self.fields['transaction_type'].widget = forms.HiddenInput()
                   
                   
-            def save(self, commit = True):
-                  self.instance.account = self.account
-                  self.instance.balance_after_transaction = self.account.balance 
-                  return super().save()
+      def save(self, commit = True):
+            self.instance.account = self.account
+            self.instance.balance_after_transaction = self.account.balance 
+            return super().save()
             
 class DepositForm(TransactionForm):
       def clean_amount(self):
@@ -33,7 +33,7 @@ class DepositForm(TransactionForm):
       
 class WithdrawForm(TransactionForm):
       def clean_amount(self):
-            account = self.bank_account
+            account = self.account
             min_withdraw_amount = 100
             max_withdraw_amount = 2000
             balance = account.balance
@@ -44,3 +44,4 @@ class WithdrawForm(TransactionForm):
                   raise forms.ValidationError(f'You can withdraw maximum {max_withdraw_amount}.')
             if amount > balance:
                   raise forms.ValidationError(f'You do not have sufficient balance.')
+            return amount
