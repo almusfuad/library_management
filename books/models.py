@@ -19,7 +19,7 @@ class Book(models.Model):
       category = models.ManyToManyField(Category, related_name = 'books')
       book_image = models.ImageField(upload_to = book_image_upload, null = True, blank = True)
       borrow_price = models.DecimalField(max_digits = 6, decimal_places=2)
-      average_reviews = models.DecimalField(default = 0, decimal_places=2, max_digits=3)
+      average_reviews = models.DecimalField(default = 0, decimal_places=1, max_digits=3)
       slug = models.SlugField(unique=True, blank=True, null=True)
       
       def save(self, *args, **kwargs):
@@ -56,6 +56,12 @@ class UserBookReview(models.Model):
                   return round(average_score, 2)
             else:
                   return 0
+            
+      def save(self, *args, **kwargs):
+            super().save(*args, **kwargs)
+            book = self.book
+            book.average_reviews = UserBookReview.calculate_average_review(book)
+            book.save()
       
       
       

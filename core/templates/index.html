@@ -24,36 +24,47 @@
     <div class="mr-8 flex-col">
         <h2 class="mb-2">Browse by category</h2>
         <ul>
-            {% for category in data.categories %}
-            <li>{{ category.category_name }}</li>
+            <li><a href="{% url 'home' %}">All</a></li>
+            {% for category in categories %}
+            <li><a href="{% url 'home' %}?category={{ category.id }}">{{ category.category_name }}</a></li>
             {% endfor %}
         </ul>
     </div>
 
-    <!-- Right pane for Book List -->
     <div>
         <h2 class="text-2xl font-bold mb-4">Book List</h2>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
-            {% for book in data.books %}
+            {% for book in books %}
             <div class="bg-white p-6 rounded-lg shadow-md flex">
                 <!-- Left side -->
                 <div class="flex-shrink-0 mr-4">
                     <img src="{{ book.book_image.url }}" alt="{{ book.book_title }}"
-                        class="w-full h-32 object-cover mb-4">
+                        class="w-full h-40 object-cover mb-4">
+                        <p></p>
+                        {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'click_borrow' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="book_id" value="{{ book.id }}">
+                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Borrow Book
+                            </button>
+                        </form>
+                        {% endif %}
                 </div>
                 <div>
                     <h3 class="text-xl font-semibold mb-2">{{ book.book_title }}</h3>
                     <p class="text-gray-600 mb-4" style="max-width: 20rem;">{{ book.book_description|truncatewords:20 }}
                     </p>
+                    <p class="text-gray-700">Categories:
+                        {% for category in book.category.all %}
+                        <span class="bg-gray-200">{{ category.category_name }}{% if not forloop.last %}, {% endif%}</span>
+                        {% endfor %}
+                    </p>
                     <p class="text-gray-700">Borrowing Price: {{ book.borrow_price }}</p>
                     <!-- Add more fields as needed -->
                     <p class="text-gray-700">User Reviews: {{ book.average_reviews }}/5</p>
-                    <p class="text-gray-700">Categories:
-                        {% for category in book.category.all %}
-                        {{ category.category_name }}{% if not forloop.last %}, {% endif %}
-                        {% endfor %}
-                    </p>
                 </div>
+                
             </div>
             {% endfor %}
         </div>

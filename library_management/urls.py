@@ -27,6 +27,7 @@ urlpatterns = [
     path('', HomeView.as_view(), name = 'home'),
     path('accounts/', include('accounts.urls')),
     path('transactions/', include('transactions.urls')),
+    path('borrow_books/', include('borrow_books.urls')),
 ]
 
 
