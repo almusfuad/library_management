@@ -1,13 +1,13 @@
 EXCELLENT = '5'
 GOOD = '4'
-FAIR = '3'
-POOR = '2'
-NOT_AT_ALL = '1'
+AVERAGE = '3'
+FAIR = '2'
+POOR = '1'
 
 BOOK_BORROWER_EXPERIENCE = [
       (EXCELLENT, 'Excellent'),
       (GOOD, 'Good'),
+      (AVERAGE, 'Average'),
       (FAIR, 'Fair'),
       (POOR, 'Poor'),
-      (NOT_AT_ALL, 'Not at all'),
 ]

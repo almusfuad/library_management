@@ -53,6 +53,7 @@ class BorrowBookView(View):
             return redirect('transaction_report')
 
 
+@method_decorator(login_required, name = 'dispatch')
 class BorrowHistoryListView(ListView):
       model = BorrowHistory
       template_name = 'borrow_books/borrow_history.html'
