@@ -19,6 +19,7 @@ class Book(models.Model):
       category = models.ManyToManyField(Category, related_name = 'books')
       book_image = models.ImageField(upload_to = book_image_upload, null = True, blank = True)
       borrow_price = models.DecimalField(max_digits = 6, decimal_places=2)
+      average_reviews = models.DecimalField(default = 0, decimal_places=2, max_digits=3)
       slug = models.SlugField(unique=True, blank=True, null=True)
       
       def save(self, *args, **kwargs):
@@ -34,7 +35,6 @@ class UserBookReview(models.Model):
       user = models.ForeignKey(User, on_delete=models.CASCADE)
       book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
       user_review = models.CharField(max_length=5, choices=BOOK_BORROWER_EXPERIENCE)
-      review_description = models.TextField()
       
       def __str__(self):
             return f'{self.user.username}\'s reviewed {self.book.book_title}'

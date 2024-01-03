@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'core',
     'transactions',
     'books',
+    'borrow_books',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
