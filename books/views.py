@@ -3,7 +3,9 @@ from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.urls import reverse
 from .models import UserBookReview, Book
+from .constants import BOOK_BORROWER_EXPERIENCE
 from .forms import BookReviewForm
+from django.views.generic import DetailView
 
 
 # Create your views here.
@@ -36,3 +38,33 @@ def submit_review(request, book_id):
             form = BookReviewForm()
       
       return render(request, 'books/submit_review.html', {'form': form, 'book': book})
+
+
+class BookDetailView(DetailView):
+      model = Book
+      template_name = 'books/book_detail.html'
+      context_object_name = 'book_details'
+      
+      def get_context_data(self, **kwargs):
+            context = super().get_context_data(**kwargs)
+            
+            # Retrieve the book object using the slug parameter
+            slug = self.kwargs.get('slug')
+            book = get_object_or_404(Book, slug=slug)
+            
+            # retrieve all reviews
+            reviews = UserBookReview.objects.filter(book=book).order_by('-review_date')
+            
+            # Map user as user input
+            review_mapping = dict(BOOK_BORROWER_EXPERIENCE)
+            
+            # Add reviews to the context
+            context['reviews'] = [{
+                  'user': review.user,
+                  'rating': review_mapping.get(reviews.user_review, 'Unknown'),
+                  'description': review.review_description,
+            } 
+            for review in reviews]
+            
+            return context
+            

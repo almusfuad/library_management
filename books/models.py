@@ -2,10 +2,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from .constants import BOOK_BORROWER_EXPERIENCE
 from django.utils.text import slugify
+from django.utils import timezone
 
 # Create your models here.
 class Category(models.Model):
       category_name = models.CharField(max_length = 50)
+      category_slug = models.SlugField(unique=True, blank=True, null= True)
       
       def __str__(self):
             return self.category_name
@@ -35,6 +37,7 @@ class UserBookReview(models.Model):
       user = models.ForeignKey(User, on_delete=models.CASCADE)
       book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
       user_review = models.CharField(max_length=5, choices=BOOK_BORROWER_EXPERIENCE)
+      # review_date = models.DateTimeField(auto_now_add=True)
       review_description = models.TextField(null=True)
       
       def __str__(self):
@@ -42,6 +45,7 @@ class UserBookReview(models.Model):
       
       class Meta:
             unique_together = ('user', 'book')
+            # ordering = ['-review_date']
             
       @property
       def numeric_review(self):

@@ -10,9 +10,9 @@ class HomeView(ListView):
     context_object_name = 'books'
 
     def get_queryset(self):
-        category_id = self.request.GET.get('category')
-        if category_id:
-            return Book.objects.filter(category__id=category_id)
+        category_slug = self.request.GET.get('category')
+        if category_slug:
+            return Book.objects.filter(category__category_slug=category_slug)
         else:
             return Book.objects.all()
 

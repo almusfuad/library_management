@@ -16,6 +16,20 @@ from transactions.models import Transaction
 from transactions.constants import BORROW_BOOK
 from books.models import Book, UserBookReview
 
+# import for sending email
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage, EmailMultiAlternatives
+
+
+def send_borrow_email(user, book_info, subject, templates):
+      message = render_to_string(templates, {
+            'user': user,
+            'book_info': book_info,
+      })
+      send_email = EmailMultiAlternatives(subject, '', to=[user.email])
+      send_email.attach_alternative(message, 'text/html')
+      send_email.send()
+
 
 @method_decorator(login_required, name = 'dispatch')
 class BorrowBookView(View):
@@ -23,15 +37,18 @@ class BorrowBookView(View):
         return redirect('transaction_report')
       
       def post(self, request, *args, **kwargs):
-            book_id = self.request.POST.get('book_id')
-            book = Book.objects.get(id = book_id)
+            # book_id = self.request.POST.get('book_id')
+            # book = Book.objects.get(id = book_id)
+            
+            # Retrieve the book object using the slug parameter
+            book_slug = self.request.POST.get('slug')
+            book = get_object_or_404(Book, slug=book_slug)
             user = self.request.user
             
             # check for balance
             if user.account.balance < book.borrow_price:
                   messages.error(self.request, 'You have insufficient balance. Please deposit first.')
                   return redirect('deposit_money')
-            
             
             # create borrow_history
             borrow_history = BorrowHistory.objects.create(
@@ -51,6 +68,7 @@ class BorrowBookView(View):
             user.account.balance -= book.borrow_price
             user.account.save()
             
+            send_borrow_email(user, book.borrow_price, 'Book Borrowed', 'borrow_books/emails/borrow_success.html')
             messages.success(self.request, f'{borrow_history.book.book_title} has borrowed successfully.')
             return redirect('transaction_report')
 
@@ -64,34 +82,3 @@ class BorrowHistoryListView(ListView):
       
       def get_queryset(self):
             return BorrowHistory.objects.filter(user = self.request.user).order_by('-borrow_date')
-      
-
-# def submit_review(request, book_id):
-#       book = get_object_or_404(Book, id = book_id)
-#       user = request.user
-      
-#       # check the user has already reviewed the book or not
-#       existing_review = UserBookReview.objects.filter(user = user, book = book)
-#       if existing_review.exists():
-#             messages.error(request, "Book already reviewed!")
-#             return HttpResponseRedirect(redirect('borrow_history'))
-      
-#       if request.method == 'POST':
-#             form = BookReviewForm(request.POST)
-#             if form.is_valid():
-#                   # save new review
-#                   new_review = form.save(commit = False)
-#                   new_review.user = user
-#                   new_review.book = book
-#                   new_review.save()
-                  
-#                   # update average_reviews in the model
-#                   book.average_reviews = UserBookReview.calculate_average_review(book)
-#                   book.save()
-                  
-#                   messages.success(request, 'Review submitted successfully!')
-#                   return HttpResponseRedirect(reverse('borrow_history'))
-#       else:
-#             form = BookReviewForm()
-      
-#       return render(request, 'borrow_books/submit_review.html', {'form': form, 'book': book})
