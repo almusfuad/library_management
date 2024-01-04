@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.views import LoginView, LogoutView
 from .models import UserBankAccount, UserAddress
+from django.contrib import messages
 
 
 # Create your views here.
@@ -21,7 +22,8 @@ class UserRegistrationView(FormView):
             print(form.cleaned_data)
             user = form.save()
             # login(self.request, user)
-            print(user)
+            # print(user)
+            messages.success(self.request, 'Your account registration was successful. Please login to continue.')
             return super().form_valid(form)
             
 
@@ -29,6 +31,7 @@ class UserLoginView(LoginView):
       template_name = 'accounts/user_login.html'
       
       def get_success_url(self):
+            messages.success(self.request, 'You are successfully logged in.')
             return reverse_lazy('home')
       
       
@@ -36,6 +39,7 @@ class UserLogoutView(LogoutView):
       def get_success_url(self):
             if self.request.user.is_authenticated:
                   logout(self.request)
+                  messages.success(self.request, 'You are successfully logged out.')
             return reverse_lazy('home')
       
 @method_decorator(login_required, name='dispatch')

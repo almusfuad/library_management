@@ -4,17 +4,24 @@
 {% block body %}
 <div class="container mx-auto my-4">
       <div class="card mx-2 flex flex-col">
-            <div class="flex justify-between items-center px-4 py-2">
-                  <div class="w-5/12">
+            <div class="flex justify-between items-start px-4 py-2">
+                  <div class="w-3/12 relative">
                         {% if book_details.book_image %}
                         <img src="{{ book_details.book_image.url }}" alt="{{ book_details.book_title }}"
-                              class="w-full h-auto">
+                              class="w-full h-full object-cover">
                         {% endif %}
-                        <p></p>
+                  </div>
+                  <div class="w-9/12 flex flex-col justify-start items-start px-6">
+                        <h3 class="text-3xl font-bold mb-4 text-blue-700">Title: {{ book_details.book_title }}</h3>
+                        <p class="text-lg font-semibold text-gray-800 mb-2">Description: {{ book_details.book_description }}</p>
+                        <p class="text-gray-600 mb-2">Category: {{ book_details.category.all|join:", " }}</p>
+                        <h6 class="text-blue-600 font-bold mb-2">Borrow Price: BDT {{ book_details.borrow_price }}</h6>
+                        <h6 class="text-green-600 font-bold mb-2">Average Reviews: {{ book_details.average_reviews }}</h6>
+                        <h3 class="text-gray-600 mb-2">Total Reviews: {{ reviews|length }}</h3>
                         {% if user.is_authenticated %}
                         <form method="post" action="{% url 'click_borrow' %}">
                               {% csrf_token %}
-                              <input type="hidden" name="book_slug" value="{{ book_details.slug }}">
+                              <input type="hidden" name="slug" value="{{ book_details.slug }}">
                               <button type="submit"
                                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                     Borrow Book
@@ -22,26 +29,18 @@
                         </form>
                         {% endif %}
                   </div>
-                  <div class="w-7/12 flex flex-col justify-start items-start px-3">
-                        <h3 class="text-2xl font-bold mb-2">Title: {{ book_details.book_title }}</h3>
-                        <p>Description: {{ book_details.book_description }}</p>
-                        <p>Category: {{ book_details.category.all|join:", " }}</p>
-                        <h6>Borrow Price: ${{ book_details.borrow_price }}</h6>
-                        <h6>Average Reviews: {{ book_details.average_reviews }}</h6>
-                  </div>
             </div>
       </div>
 
       <!-- Display reviews -->
       <div class="card m-2">
-            <h5 class="p-3">Total Reviews: {{ reviews|length }}</h5>
             {% for review in reviews %}
-            <div class="card-body border m-2">
-                  <p><b>User:</b> {{ review.user }}</p>
-                  <p><b>Rating:</b> {{ review.rating }}</p>
-                  <p>{{ review.description }}</p>
+            <div class="card-body border m-2 bg-white rounded-md p-4 shadow-md">
+                <p class="text-lg font-semibold">{{ review.user.first_name }} {{review.user.last_name}}</p>
+                <p class="text-sm text-gray-500">Mark as: {{ review.rating }}</p>
+                <p class="text-md">{{ review.description }}</p>
             </div>
             {% endfor %}
-      </div>
+        </div>
 </div>
 {% endblock %}

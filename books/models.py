@@ -10,8 +10,8 @@ class Category(models.Model):
       category_slug = models.SlugField(unique=True, blank=True, null= True)
       
       def save(self, *args, **kwargs):
-            if not self.slug:
-                  self.slug = slugify(f"{self.category_name}")
+            if not self.category_slug:
+                  self.category_slug = slugify(f"{self.category_name}")
             return super().save(*args, **kwargs)
       
       def __str__(self):

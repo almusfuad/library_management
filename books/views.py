@@ -53,7 +53,7 @@ class BookDetailView(DetailView):
             book = get_object_or_404(Book, slug=slug)
             
             # retrieve all reviews
-            reviews = UserBookReview.objects.filter(book=book).order_by('-review_date')
+            reviews = UserBookReview.objects.filter(book=book).order_by('-id')
             
             # Map user as user input
             review_mapping = dict(BOOK_BORROWER_EXPERIENCE)
@@ -61,7 +61,7 @@ class BookDetailView(DetailView):
             # Add reviews to the context
             context['reviews'] = [{
                   'user': review.user,
-                  'rating': review_mapping.get(reviews.user_review, 'Unknown'),
+                  'rating': review_mapping.get(review.user_review, 'Unknown'),
                   'description': review.review_description,
             } 
             for review in reviews]

@@ -70,7 +70,7 @@ class BorrowBookView(View):
             
             send_borrow_email(user, book.borrow_price, 'Book Borrowed', 'borrow_books/emails/borrow_success.html')
             messages.success(self.request, f'{borrow_history.book.book_title} has borrowed successfully.')
-            return redirect('transaction_report')
+            return redirect('book_detail', slug=book.slug)
 
 
 @method_decorator(login_required, name = 'dispatch')

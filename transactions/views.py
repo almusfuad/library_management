@@ -22,7 +22,7 @@ from django.core.mail import EmailMessage, EmailMultiAlternatives
 
 # sending email to user
 def send_transaction_email(user, amount, subject, templates):
-      message = render_to_string(template, {
+      message = render_to_string(templates, {
             'user': user,
             'amount': amount,
       })
@@ -70,7 +70,7 @@ class DepositMoneyView(TransactionCreateMixin):
             )
             messages.success(self.request, f'BDT {amount} was deposited successfully.')
             # Deposit email
-            send_transaction_email(self.request.user, amount, 'Deposit Money', 'transactions/emails/deposit_money.html')
+            send_transaction_email(self.request.user, amount, 'Deposit Money', 'transactions/emails/deposit_email.html')
             return super().form_valid(form)
       
             
@@ -91,7 +91,7 @@ class WithdrawMoneyView(TransactionCreateMixin):
             )
             messages.success(self.request, f'BDT {amount} was withdrawn successfully.')
             # Withdraw email success
-            send_transaction_email(self.request.user, amount, 'Withdraw Money', 'transactions/emails/withdraw_money.html')   
+            send_transaction_email(self.request.user, amount, 'Withdraw Money', 'transactions/emails/withdraw_email.html')   
             return super().form_valid(form)
            
             

@@ -14,4 +14,23 @@ class BorrowHistory(models.Model):
 
       class Meta:
             ordering = ['borrow_date']
+            
+      # def save(self, *args, **kwargs):
+      #       if self.is_returned and not self.return_date:
+      #             # If 'is_returned' is True and 'return_date' is not set, set 'return_date'
+      #             self.return_date = timezone.now()
+
+      #             # Refund the amount to the user's account
+      #             self.user.account.balance += self.book.borrow_price
+      #             self.user.account.save()
+
+      #             # Create a transaction report for the refund
+      #             Transaction.objects.create(
+      #             account=self.user.account,
+      #             amount=self.book.borrow_price,
+      #             balance_after_transaction=self.user.account.balance,
+      #             transaction_type=RETURN_BOOK
+      #             )
+
+      #       super().save(*args, **kwargs)  # Call the original save method
       
