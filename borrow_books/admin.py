@@ -3,6 +3,7 @@ from .models import BorrowHistory
 from django.utils import timezone
 from transactions.models import Transaction
 from transactions.constants import RETURN_BOOK
+from .views import send_borrow_email
 
 # Register your models here.
 @admin.register(BorrowHistory)
@@ -34,5 +35,5 @@ class BorrowHistoryAdmin(admin.ModelAdmin):
                   balance_after_transaction=obj.user.account.balance,
                   transaction_type=RETURN_BOOK
             )
-
+            send_borrow_email(obj.user, f'Book: {obj.book.book_title}', 'Book Returned', 'borrow_books/emails/return_success.html')
             super().save_model(request, obj, form, change)

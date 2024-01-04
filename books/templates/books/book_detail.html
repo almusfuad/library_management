@@ -15,7 +15,7 @@
                         <h3 class="text-3xl font-bold mb-4 text-blue-700">Title: {{ book_details.book_title }}</h3>
                         <p class="text-lg font-semibold text-gray-800 mb-2">Description: {{ book_details.book_description }}</p>
                         <p class="text-gray-600 mb-2">Category: {{ book_details.category.all|join:", " }}</p>
-                        <h6 class="text-blue-600 font-bold mb-2">Borrow Price: BDT {{ book_details.borrow_price }}</h6>
+                        <h6 class="text-blue-600 font-bold mb-2">Borrow Price: {{ book_details.borrow_price }} (BDT)</h6>
                         <h6 class="text-green-600 font-bold mb-2">Average Reviews: {{ book_details.average_reviews }}</h6>
                         <h3 class="text-gray-600 mb-2">Total Reviews: {{ reviews|length }}</h3>
                         {% if user.is_authenticated %}
