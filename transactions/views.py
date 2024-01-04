@@ -16,6 +16,19 @@ from .models import Transaction
 from .forms import DepositForm, WithdrawForm
 from .constants import DEPOSIT, WITHDRAW, BORROW_BOOK, RETURN_BOOK
 
+# import for sending email
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage, EmailMultiAlternatives
+
+# sending email to user
+def send_transaction_email(user, amount, subject, templates):
+      message = render_to_string(template, {
+            'user': user,
+            'amount': amount,
+      })
+      send_email = EmailMultiAlternatives(subject, '', to = [user.email])
+      send_email.attach_alternative(message, 'text/html')
+      send_email.send()
 
 
 
@@ -56,6 +69,8 @@ class DepositMoneyView(TransactionCreateMixin):
                   update_fields = ['balance']
             )
             messages.success(self.request, f'BDT {amount} was deposited successfully.')
+            # Deposit email
+            send_transaction_email(self.request.user, amount, 'Deposit Money', 'transactions/emails/deposit_money.html')
             return super().form_valid(form)
       
             
@@ -75,7 +90,8 @@ class WithdrawMoneyView(TransactionCreateMixin):
                   update_fields = ['balance']
             )
             messages.success(self.request, f'BDT {amount} was withdrawn successfully.')
-                  
+            # Withdraw email success
+            send_transaction_email(self.request.user, amount, 'Withdraw Money', 'transactions/emails/withdraw_money.html')   
             return super().form_valid(form)
            
             
