@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Submit Review{% endblock %}
+{% block body %}
+<div class="bg-white px-3 py-4 rounded-xl my-6">
+      <h1 class="font-bold text-3xl text-center pb-5">Review Book</h1>
+      <div class="w-full mt-10">
+            <h2 class="px-8 pt-6 font-semibold">Review For: {{book.book_title}}</h2>
+            <form method="post" action="{% url 'submit_review' book_id=book.id %}" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                  {% csrf_token %}
+                  {{ form|crispy }}
+                  <div class="flex items-center justify-between">
+                        <button
+                              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                              type="submit">
+                              Submit
+                        </button>
+                  </div>
+            </form>
+      </div>
+</div>
+{% endblock %}

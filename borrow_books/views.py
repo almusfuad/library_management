@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.views import View
 from django.views.generic import ListView
@@ -7,12 +7,14 @@ from django.views.generic import ListView
 # authorizations import
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.urls import reverse
+from books.forms import BookReviewForm
 
 # all db models
 from .models import BorrowHistory
 from transactions.models import Transaction
 from transactions.constants import BORROW_BOOK
-from books.models import Book
+from books.models import Book, UserBookReview
 
 
 @method_decorator(login_required, name = 'dispatch')
@@ -62,3 +64,34 @@ class BorrowHistoryListView(ListView):
       
       def get_queryset(self):
             return BorrowHistory.objects.filter(user = self.request.user).order_by('-borrow_date')
+      
+
+# def submit_review(request, book_id):
+#       book = get_object_or_404(Book, id = book_id)
+#       user = request.user
+      
+#       # check the user has already reviewed the book or not
+#       existing_review = UserBookReview.objects.filter(user = user, book = book)
+#       if existing_review.exists():
+#             messages.error(request, "Book already reviewed!")
+#             return HttpResponseRedirect(redirect('borrow_history'))
+      
+#       if request.method == 'POST':
+#             form = BookReviewForm(request.POST)
+#             if form.is_valid():
+#                   # save new review
+#                   new_review = form.save(commit = False)
+#                   new_review.user = user
+#                   new_review.book = book
+#                   new_review.save()
+                  
+#                   # update average_reviews in the model
+#                   book.average_reviews = UserBookReview.calculate_average_review(book)
+#                   book.save()
+                  
+#                   messages.success(request, 'Review submitted successfully!')
+#                   return HttpResponseRedirect(reverse('borrow_history'))
+#       else:
+#             form = BookReviewForm()
+      
+#       return render(request, 'borrow_books/submit_review.html', {'form': form, 'book': book})

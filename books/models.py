@@ -35,6 +35,7 @@ class UserBookReview(models.Model):
       user = models.ForeignKey(User, on_delete=models.CASCADE)
       book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='reviews')
       user_review = models.CharField(max_length=5, choices=BOOK_BORROWER_EXPERIENCE)
+      review_description = models.TextField(null=True)
       
       def __str__(self):
             return f'{self.user.username}\'s reviewed {self.book.book_title}'
@@ -62,6 +63,3 @@ class UserBookReview(models.Model):
             book = self.book
             book.average_reviews = UserBookReview.calculate_average_review(book)
             book.save()
-      
-      
-      
